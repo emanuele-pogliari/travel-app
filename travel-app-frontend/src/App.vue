@@ -1,5 +1,25 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import HelloWorld from "./components/HelloWorld.vue";
+import axios from "axios";
+
+export default {
+  components: {
+    HelloWorld,
+  },
+  data() {
+    return {
+      trip: [],
+    };
+  },
+  created() {
+    axios
+      .get("http://localhost/travel-app/travel-app-backend/api/trips.php")
+      .then((response) => {
+        console.log(response.data);
+        this.trip = response.data;
+      });
+  },
+};
 </script>
 
 <template>

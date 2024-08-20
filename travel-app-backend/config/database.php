@@ -16,9 +16,6 @@ try {
 
     // Abilita l'uso di nomi di colonne associativi nell'output
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-    // Messaggio di debug, da rimuovere in produzione
-    echo "Connessione al database riuscita!";
 } catch (PDOException $e) {
     // Gestione degli errori: stampa un messaggio di errore e termina lo script
     echo "Errore di connessione al database: " . $e->getMessage();
