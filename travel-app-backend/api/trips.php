@@ -28,6 +28,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $data = json_decode(file_get_contents('php://input'), true);
         $trip->title = $data['title'];
         $trip->description = $data['description'];
+        $trip->start_date = $data['start_date'];
         if ($trip->create()) {
             echo json_encode(['success' => true, 'trip_id' => $trip->id]);
         } else {
@@ -40,6 +41,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $trip->id = $data['id'];
         $trip->title = $data['title'];
         $trip->description = $data['description'];
+        $trip->start_date = $data['start_date'];
         if ($trip->update()) {
             echo json_encode(['success' => true]);
         } else {

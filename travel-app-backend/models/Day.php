@@ -14,26 +14,10 @@ class Day
         $this->conn = $db;
     }
 
-    public function create()
-    {
-        $query = "INSERT INTO " . $this->table_name . " (trip_id, day_number, date) VALUES (:trip_id, :day_number, :date)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':trip_id', $this->trip_id);
-        $stmt->bindParam(':day_number', $this->day_number);
-        $stmt->bindParam(':date', $this->date);
-
-        if ($stmt->execute()) {
-            $this->id = $this->conn->lastInsertId();
-            return true;
-        }
-        return false;
-    }
-
     public function getAll()
     {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE trip_id = :trip_id";
+        $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':trip_id', $this->trip_id);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -47,28 +31,38 @@ class Day
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getStops()
+    public function getByTripId($trip_id)
     {
-        $query = "SELECT * FROM stops WHERE day_id = :day_id";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE trip_id = :trip_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':day_id', $this->id);
+        $stmt->bindParam(':trip_id', $trip_id);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function create()
+    {
+        $query = "INSERT INTO " . $this->table_name . " (trip_id, day_number, date) VALUES (:trip_id, :day_number, :date)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':trip_id', $this->trip_id);
+        $stmt->bindParam(':day_number', $this->day_number);
+        $stmt->bindParam(':date', $this->date);
+        if ($stmt->execute()) {
+            $this->id = $this->conn->lastInsertId();
+            return true;
+        }
+        return false;
     }
 
     public function update()
     {
         $query = "UPDATE " . $this->table_name . " SET trip_id = :trip_id, day_number = :day_number, date = :date WHERE id = :id";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
         $stmt->bindParam(':trip_id', $this->trip_id);
         $stmt->bindParam(':day_number', $this->day_number);
         $stmt->bindParam(':date', $this->date);
-        $stmt->bindParam(':id', $this->id);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 
     public function delete()
@@ -76,10 +70,6 @@ class Day
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 }

@@ -1,18 +1,19 @@
 <?php
-
+header("Content-Type: application/json");
 // days.php
-include_once '../config/db.php';
+include_once '../config/database.php';
 include_once '../models/Day.php';
-
 
 $day = new Day($db);
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
         if (isset($_GET['trip_id'])) {
-            $result = $day->getById($_GET['trip_id']);
+            $result = $day->getByTripId($_GET['trip_id']);
         } elseif (isset($_GET['id'])) {
             $result = $day->getById($_GET['id']);
+        } else {
+            $result = $day->getAll();
         }
         echo json_encode($result);
         break;

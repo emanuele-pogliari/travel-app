@@ -9,6 +9,8 @@ class Stage
     public $title;
     public $description;
     public $location;
+    public $latitude;
+    public $longitude;
     public $image;
 
     public function __construct($db)
@@ -16,28 +18,10 @@ class Stage
         $this->conn = $db;
     }
 
-    public function create()
-    {
-        $query = "INSERT INTO " . $this->table_name . " (day_id, title, description, location, image) VALUES (:day_id, :title, :description, :location, :image)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':day_id', $this->day_id);
-        $stmt->bindParam(':title', $this->title);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':location', $this->location);
-        $stmt->bindParam(':image', $this->image);
-
-        if ($stmt->execute()) {
-            $this->id = $this->conn->lastInsertId();
-            return true;
-        }
-        return false;
-    }
-
     public function getAll()
     {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE day_id = :day_id";
+        $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':day_id', $this->day_id);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -51,20 +35,46 @@ class Stage
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function update()
+    public function getByDayId($day_id)
     {
-        $query = "UPDATE " . $this->table_name . " SET title = :title, description = :description, location = :location, image = :image WHERE id = :id";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE day_id = :day_id";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':day_id', $day_id);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function create()
+    {
+        $query = "INSERT INTO " . $this->table_name . " (day_id, title, description, location, latitude, longitude, image) VALUES (:day_id, :title, :description, :location, :latitude, :longitude, :image)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':day_id', $this->day_id);
         $stmt->bindParam(':title', $this->title);
         $stmt->bindParam(':description', $this->description);
         $stmt->bindParam(':location', $this->location);
+        $stmt->bindParam(':latitude', $this->latitude);
+        $stmt->bindParam(':longitude', $this->longitude);
         $stmt->bindParam(':image', $this->image);
-        $stmt->bindParam(':id', $this->id);
-
         if ($stmt->execute()) {
+            $this->id = $this->conn->lastInsertId();
             return true;
         }
         return false;
+    }
+
+    public function update()
+    {
+        $query = "UPDATE " . $this->table_name . " SET day_id = :day_id, title = :title, description = :description, location = :location, latitude = :latitude, longitude = :longitude, image = :image WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':day_id', $this->day_id);
+        $stmt->bindParam(':title', $this->title);
+        $stmt->bindParam(':description', $this->description);
+        $stmt->bindParam(':location', $this->location);
+        $stmt->bindParam(':latitude', $this->latitude);
+        $stmt->bindParam(':longitude', $this->longitude);
+        $stmt->bindParam(':image', $this->image);
+        return $stmt->execute();
     }
 
     public function delete()
@@ -72,10 +82,6 @@ class Stage
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 }
