@@ -5,7 +5,15 @@ export default {
 </script>
 
 <template>
-  <nav></nav>
+  <nav class="border-top d-flex me-0">
+    <div class="text-center nav-item">Home</div>
+    <div class="text-center nav-item">ADD</div>
+    <div class="text-center nav-item">Option</div>
+  </nav>
 </template>
 
-<style></style>
+<style>
+.nav-item {
+  width: calc(100% / 3);
+}
+</style>
