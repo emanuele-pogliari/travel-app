@@ -1,21 +1,31 @@
 <?php
-
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Content-Type: application/json");
-
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 include_once '../config/database.php';
 include_once '../models/Trip.php';
 
-// Assicurati che $db non sia null
 if ($db === null) {
     echo json_encode(['success' => false, 'message' => 'Database connection failed']);
     exit;
 }
 
-// Crea l'oggetto Trip
 $trip = new Trip($db);
+
+$data = json_decode(file_get_contents('php://input'), true);
+
+// Logga il contenuto grezzo
+error_log('Raw data received: ' . file_get_contents('php://input'));
+
+// Logga il JSON decodificato
+error_log('Decoded data: ' . print_r($data, true));
+
+// if (!$data) {
+//     echo json_encode(['success' => false, 'message' => 'Dati non ricevuti o JSON malformato']);
+//     exit;
+// }
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
@@ -28,9 +38,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 
     case 'POST':
-        $data = json_decode(file_get_contents('php://input'), true);
+        if (!isset($data['title'], $data['description'], $data['cover'], $data['start_date'])) {
+            echo json_encode(['success' => false, 'message' => 'Campi mancanti']);
+            exit;
+        }
         $trip->title = $data['title'];
         $trip->description = $data['description'];
+        $trip->cover = $data['cover'];
         $trip->start_date = $data['start_date'];
         if ($trip->create()) {
             echo json_encode(['success' => true, 'trip_id' => $trip->id]);
@@ -44,6 +58,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $trip->id = $data['id'];
         $trip->title = $data['title'];
         $trip->description = $data['description'];
+        $trip->cover = $data['cover'];
         $trip->start_date = $data['start_date'];
         if ($trip->update()) {
             echo json_encode(['success' => true]);

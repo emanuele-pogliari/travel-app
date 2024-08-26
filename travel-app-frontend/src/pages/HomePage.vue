@@ -1,10 +1,13 @@
 <script>
 import AppMainContent from "../components/AppMainContent.vue";
 import AppNav from "../components/AppNav.vue";
+import AppUpNav from "../components/AppUpNav.vue";
+
 export default {
   name: "HomePage",
 
   components: {
+    AppUpNav, // Up navigation bar
     AppMainContent,
     AppNav,
   },
@@ -13,12 +16,14 @@ export default {
 
 <template>
   <div class="container">
-    <div class="d-flex flex-column">
-      <h1 class="my-3">Home</h1>
-      <AppMainContent></AppMainContent>
-      <AppNav></AppNav>
-    </div>
+    <AppUpNav></AppUpNav>
+    <AppMainContent></AppMainContent>
   </div>
+  <AppNav></AppNav>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.up-nav {
+  height: 8vh;
+}
+</style>

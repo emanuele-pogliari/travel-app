@@ -25,7 +25,14 @@ export default {
 </script>
 
 <template>
-  <AppCard v-for="trip in trips" :trip="trip"></AppCard>
+  <div class="main-section">
+    <AppCard v-for="trip in trips" :trip="trip"></AppCard>
+  </div>
 </template>
 
-<style></style>
+<style lang="scss">
+.main-section {
+  height: 87vh;
+  overflow: auto;
+}
+</style>

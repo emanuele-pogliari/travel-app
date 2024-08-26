@@ -9,3 +9,7 @@ import "bootstrap/dist/css/bootstrap.css";
 createApp(App).use(router).mount("#app");
 
 import "bootstrap/dist/js/bootstrap.js";
+
+import "@fortawesome/fontawesome-free/css/all.css";
+
+import "@fortawesome/fontawesome-free/js/all.js";

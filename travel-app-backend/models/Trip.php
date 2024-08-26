@@ -1,4 +1,7 @@
 <?php
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 class Trip
 {
     private $conn;
@@ -7,6 +10,7 @@ class Trip
     public $id;
     public $title;
     public $description;
+    public $cover;
     public $start_date;
 
     public function __construct($db)
@@ -71,23 +75,40 @@ class Trip
 
     public function create()
     {
-        $query = "INSERT INTO " . $this->table_name . " (title, description) VALUES (:title, :description)";
+        $query = "INSERT INTO " . $this->table_name . " (title, description, cover, start_date) VALUES (:title, :description, :cover, :start_date)";
+
         $stmt = $this->conn->prepare($query);
+
         $stmt->bindParam(':title', $this->title);
         $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':start_date', $this->start_date);
-        if ($stmt->execute()) {
-            $this->id = $this->conn->lastInsertId();
-            return true;
+        $stmt->bindParam(':cover', $this->cover);
+        if (empty($this->start_date)) {
+            $stmt->bindValue(':start_date', null, PDO::PARAM_NULL);
+        } else {
+            $stmt->bindParam(':start_date', $this->start_date);
         }
-        return false;
+
+        try {
+            if ($stmt->execute()) {
+                $this->id = $this->conn->lastInsertId();
+                return true;
+            } else {
+                // Log dell'errore SQL se l'inserimento fallisce
+                error_log('SQL Error: ' . implode(" ", $stmt->errorInfo()));
+                return false;
+            }
+        } catch (PDOException $e) {
+            // Log dell'eccezione se si verifica un errore durante l'esecuzione
+            error_log('PDOException: ' . $e->getMessage());
+            return false;
+        }
     }
+
 
     public function update()
     {
         $query = "UPDATE " . $this->table_name . " SET title = :title, description = :description WHERE id = :id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $this->id);
         $stmt->bindParam(':title', $this->title);
         $stmt->bindParam(':description', $this->description);
         $stmt->bindParam(':start_date', $this->start_date);
