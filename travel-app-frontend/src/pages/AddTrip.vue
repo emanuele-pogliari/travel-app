@@ -32,14 +32,18 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.message = "Viaggio aggiunto con successo!";
+            alert(this.message);
+            window.location.href = "http://localhost:5173/";
           } else {
             this.message = "Errore nell'aggiunta del viaggio.";
+            alert(this.message);
           }
         })
         .catch((error) => {
           console.error("Errore:", error);
           this.message =
             "Si è verificato un errore durante l'invio del modulo.";
+          alert(this.message);
         });
     },
   },
