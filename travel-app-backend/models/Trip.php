@@ -9,6 +9,7 @@ class Trip
 
     public $id;
     public $title;
+    public $stage_number;
     public $description;
     public $cover;
     public $start_date;
@@ -62,6 +63,44 @@ class Trip
         }
 
         return $days;
+    }
+
+    public function getDayByTripId($trip_id, $day_number)
+    {
+        $query = "SELECT * FROM days WHERE trip_id = :trip_id AND day_number = :day_number";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':trip_id', $trip_id);
+        $stmt->bindParam(':day_number', $day_number);
+        $stmt->execute();
+        $day = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($day) {
+            $day['stages'] = $this->getStages($day['id']);
+        }
+        return $day;
+    }
+
+    public function getStageByTripIdDayNumberAndStageNumber($trip_id, $day_number, $stage_number)
+    {
+        // Fetch the specific day first
+        $query = "SELECT id FROM days WHERE trip_id = :trip_id AND day_number = :day_number";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':trip_id', $trip_id);
+        $stmt->bindParam(':day_number', $day_number);
+        $stmt->execute();
+        $day = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$day) {
+            return null;  // Return null if the day is not found
+        }
+
+        // Fetch the specific stage based on the day_id and stage_number
+        $query = "SELECT * FROM stages WHERE day_id = :day_id AND stage_number = :stage_number";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':day_id', $day['id']);
+        $stmt->bindParam(':stage_number', $stage_number);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     private function getStages($day_id)

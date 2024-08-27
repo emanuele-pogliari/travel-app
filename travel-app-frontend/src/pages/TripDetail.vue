@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import { store } from "../store.js";
 import AppCardDays from "../components/AppCardDays.vue";
 
 export default {
@@ -9,12 +10,13 @@ export default {
   },
   data() {
     return {
+      tripID: "",
       single_trip: "",
-      tripID: null,
     };
   },
   created() {
     this.tripID = this.$route.params.id;
+    localStorage.setItem("CurrTripID", this.tripID);
     console.log(this.tripID);
     axios
       .get(

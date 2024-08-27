@@ -9,12 +9,14 @@ $stop = new Stage($db);
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
-        if (isset($_GET['day_id'])) {
-            $result = $stop->getByDayId($_GET['day_id']);
-        } elseif (isset($_GET['id'])) {
-            $result = $stop->getById($_GET['id']);
-        } else {
-            $result = $stop->getAll();
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            if (isset($_GET['trip_id']) && isset($_GET['day_id']) && isset($_GET['stage_number'])) {
+                // Ottieni una tappa specifica basata su trip_id, day_id e stage_number
+                $result = $stage->getStageByNumber($_GET['trip_id'], $_GET['day_id'], $_GET['stage_number']);
+                echo json_encode($result);
+            } else {
+                // Altri metodi GET possono essere gestiti qui
+            }
         }
         echo json_encode($result);
         break;
@@ -23,6 +25,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $data = json_decode(file_get_contents('php://input'), true);
         $stop->day_id = $data['day_id'];
         $stop->title = $data['title'];
+        $stop->stage_number = $data['stage_number'];
         $stop->description = $data['description'];
         $stop->location = $data['location'];
         $stop->image = $data['image'];
@@ -38,6 +41,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $stop->id = $data['id'];
         $stop->day_id = $data['day_id'];
         $stop->title = $data['title'];
+        $stop->stage_number = $data['stage_number'];
         $stop->description = $data['description'];
         $stop->location = $data['location'];
         $stop->image = $data['image'];

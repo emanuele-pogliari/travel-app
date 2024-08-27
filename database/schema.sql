@@ -20,6 +20,7 @@ CREATE TABLE stages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     day_id INT,
     title VARCHAR(255) NOT NULL,
+    stage_number INT NOT NULL,
     description TEXT,
     location VARCHAR(255),
     image TEXT,

@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "./pages/HomePage.vue";
 import AddTrip from "./pages/AddTrip.vue";
 import TripDetail from "./pages/TripDetail.vue";
+import DayDetail from "./pages/DayDetail.vue";
+import SingleStage from "./pages/SingleStage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +19,17 @@ const router = createRouter({
       path: "/trip/:id",
       name: "trip",
       component: TripDetail,
+    },
+
+    {
+      path: "/day/:id",
+      name: "day",
+      component: DayDetail,
+    },
+    {
+      path: "/stage/:id",
+      name: "stage",
+      component: SingleStage,
     },
 
     {

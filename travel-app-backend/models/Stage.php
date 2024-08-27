@@ -7,6 +7,7 @@ class Stage
     public $id;
     public $day_id;
     public $title;
+    public $stage_number;
     public $description;
     public $location;
     public $latitude;
