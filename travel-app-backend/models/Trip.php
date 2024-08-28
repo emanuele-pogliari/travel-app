@@ -13,6 +13,7 @@ class Trip
     public $description;
     public $cover;
     public $start_date;
+    public $number_of_days;
 
     public function __construct($db)
     {
@@ -110,6 +111,30 @@ class Trip
         $stmt->bindParam(':day_id', $day_id);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createWithDays()
+    {
+        // Insert the trip first
+        if ($this->create()) {
+            // Insert the days
+            for ($i = 1; $i <= $this->number_of_days; $i++) {
+                $current_date = date('Y-m-d', strtotime($this->start_date . ' + ' . ($i - 1) . ' days'));
+                $query = "INSERT INTO days (trip_id, day_number, date) VALUES (:trip_id, :day_number, :date)";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':trip_id', $this->id);
+                $stmt->bindParam(':day_number', $i);
+                $stmt->bindParam(':date', $current_date);
+                if (!$stmt->execute()) {
+                    error_log('Failed to insert day: ' . implode(' ', $stmt->errorInfo()));
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            error_log('Failed to create trip: ' . implode(' ', $this->conn->errorInfo()));
+            return false;
+        }
     }
 
     public function create()

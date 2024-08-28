@@ -3,8 +3,9 @@ CREATE TABLE trips (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
+    start_date DATE,
     cover TEXT,
-    start_date DATE
+    number_of_days INT DEFAULT 1
 );
 
 -- create days table

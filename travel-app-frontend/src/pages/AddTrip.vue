@@ -7,8 +7,9 @@ export default {
       trip: {
         title: "",
         description: "",
-        cover: "",
         start_date: "",
+        cover: "",
+        number_of_days: 1, // Default to 1 day
       },
     };
   },
@@ -20,8 +21,9 @@ export default {
           {
             title: this.trip.title,
             description: this.trip.description,
-            cover: this.trip.cover,
             start_date: this.trip.start_date || null,
+            cover: this.trip.cover,
+            number_of_days: this.trip.number_of_days, // Include the number of days
           },
           {
             headers: {
@@ -49,10 +51,13 @@ export default {
   },
 };
 </script>
+
 <template>
   <div class="container">
     <h1>Add your trip</h1>
     <form @submit.prevent="submitForm">
+      <!-- Existing form fields -->
+
       <div class="mb-3">
         <label for="trip-title" class="form-label">Trip Title</label>
         <input
@@ -63,15 +68,6 @@ export default {
           v-model="trip.title"
         />
         <div id="trip-title" class="form-text">Insert name of your trip</div>
-      </div>
-      <div class="mb-3">
-        <label for="trip-cover" class="form-label">Cover Link Image</label>
-        <input
-          type="text"
-          class="form-control"
-          id="trip-cover"
-          v-model="trip.cover"
-        />
       </div>
       <div class="mb-3">
         <label for="trip-description" class="form-label"
@@ -97,8 +93,31 @@ export default {
           v-model="trip.start_date"
         />
       </div>
+      <div class="mb-3">
+        <label for="trip-cover" class="form-label">Cover Link Image</label>
+        <input
+          type="text"
+          class="form-control"
+          id="trip-cover"
+          v-model="trip.cover"
+        />
+      </div>
+
+      <!-- New field for the number of days -->
+      <div class="mb-3">
+        <label for="trip-days" class="form-label">Number of Days</label>
+        <input
+          type="number"
+          class="form-control"
+          id="trip-days"
+          v-model="trip.number_of_days"
+          min="1"
+        />
+      </div>
+
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </div>
 </template>
+
 <style></style>

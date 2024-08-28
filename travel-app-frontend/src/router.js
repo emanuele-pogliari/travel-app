@@ -5,6 +5,7 @@ import AddTrip from "./pages/AddTrip.vue";
 import TripDetail from "./pages/TripDetail.vue";
 import DayDetail from "./pages/DayDetail.vue";
 import SingleStage from "./pages/SingleStage.vue";
+import AddStage from "./pages/AddStage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -36,6 +37,11 @@ const router = createRouter({
       path: "/add-trip",
       name: "AddTrip",
       component: AddTrip,
+    },
+    {
+      path: "/add-stage",
+      name: "AddStage",
+      component: AddStage,
     },
   ],
 });
