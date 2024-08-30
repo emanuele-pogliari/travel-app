@@ -8,26 +8,45 @@ export default {
         title: "",
         description: "",
         start_date: "",
-        cover: "",
+        cover: null,
         number_of_days: 1, // Default to 1 day
       },
+      imagePreview: null,
     };
   },
   methods: {
+    deleteImg() {
+      this.trip.cover = null; // Resetta il file selezionato
+      console.log(this.trip.cover);
+    },
+    handleFileUpload(event) {
+      this.trip.cover = event.target.files[0]; // Salva il file selezionato in this.trip.cover
+      console.log(this.trip.cover);
+      this.imagePreview = `http://localhost/travel-app/travel-app-backend/api/uploads/${this.trip.cover.name}`;
+    },
+
     submitForm() {
+      const formData = new FormData();
+      formData.append("title", this.trip.title);
+      formData.append("description", this.trip.description);
+      formData.append("start_date", this.trip.start_date || null);
+      formData.append("number_of_days", this.trip.number_of_days);
+
+      if (this.trip.cover) {
+        formData.append("cover", this.trip.cover); // Aggiunge il file a FormData
+      } else {
+        console.error("File non selezionato!");
+      }
+      console.log(this.trip);
+      console.log(formData);
+
       axios
         .post(
           "http://localhost/travel-app/travel-app-backend/api/trips.php",
-          {
-            title: this.trip.title,
-            description: this.trip.description,
-            start_date: this.trip.start_date || null,
-            cover: this.trip.cover,
-            number_of_days: this.trip.number_of_days, // Include the number of days
-          },
+          formData,
           {
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "multipart/form-data",
             },
           }
         )
@@ -55,7 +74,7 @@ export default {
 <template>
   <div class="container">
     <h1>Add your trip</h1>
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="submitForm" enctype="multipart/form-data">
       <!-- Existing form fields -->
 
       <div class="mb-3">
@@ -96,11 +115,17 @@ export default {
       <div class="mb-3">
         <label for="trip-cover" class="form-label">Cover Link Image</label>
         <input
-          type="text"
+          type="file"
           class="form-control"
           id="trip-cover"
-          v-model="trip.cover"
+          @change="handleFileUpload"
         />
+        <div v-if="trip.cover">
+          <button>
+            <i class="fa-solid fa-x del-btn"></i>
+          </button>
+          <img class="m-2 w-25" :src="`${imagePreview}`" alt="Cover Image" />
+        </div>
       </div>
 
       <!-- New field for the number of days -->
@@ -120,4 +145,9 @@ export default {
   </div>
 </template>
 
-<style></style>
+<style>
+.del-btn {
+  cursor: pointer;
+  color: red;
+}
+</style>

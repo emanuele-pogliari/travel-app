@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template>
-  <router-link :to="{ name: 'stage', params: { id: stage.id } }">
+  <router-link :to="{ name: 'stage', params: { id: stage.stage_number } }">
     <div class="card rounded-4 overflow-hidden border-0 text-bg-dark">
       <img
         src="https://content.skyscnr.com/m/320898bd38522de1/original/GettyImages-111789813_doc.jpg?resize=1800px:1800px&quality=100"

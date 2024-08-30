@@ -39,6 +39,16 @@ export default {
       v-for="stage in single_day.stages"
       :stage="stage"
     ></AppCardStage>
+
+    <div>
+      <router-link
+        :to="{ name: 'AddStage', params: { id: this.single_day.id } }"
+      >
+        <div class="border border-1 border-black px-1 rounded-5">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </router-link>
+    </div>
   </div>
 </template>
 <style></style>

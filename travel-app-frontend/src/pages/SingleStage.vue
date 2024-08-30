@@ -10,8 +10,6 @@ export default {
   },
   created() {
     this.stageID = this.$route.params.id;
-    console.log(this.currentTripID);
-    console.log(this.dayID);
     axios
       .get(
         "http://localhost/travel-app/travel-app-backend/api/trips.php?id=" +

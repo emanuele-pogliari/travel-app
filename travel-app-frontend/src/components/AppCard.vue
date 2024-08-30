@@ -5,12 +5,21 @@ export default {
   props: {
     trip: Object,
   },
+  methods: {
+    getImageUrl(imageName) {
+      if (imageName) {
+        return `http://localhost/travel-app/travel-app-backend/api/uploads/${imageName}`;
+      }
+      return "http://localhost/travel-app/travel-app-backend/api/uploads/picture.svg"; // Immagine di default se non c'è cover
+    },
+  },
 };
 </script>
 <template>
-  <router-link :to="{ name: 'trip', params: { id: trip.id } }">
+  <router-link class="my-4" :to="{ name: 'trip', params: { id: trip.id } }">
     <div class="card rounded-4 overflow-hidden border-0 text-bg-dark">
-      <img :src="trip.cover" class="card-img" alt="" />
+      <img :src="getImageUrl(trip.cover)" :alt="`${trip.title}`" />
+
       <div class="card-img-overlay d-flex align-items-end">
         <div class="box">
           <h5 class="card-title fw-bold m-0">{{ trip.title }}</h5>

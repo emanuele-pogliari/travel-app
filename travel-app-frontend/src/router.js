@@ -39,7 +39,7 @@ const router = createRouter({
       component: AddTrip,
     },
     {
-      path: "/add-stage",
+      path: "/add-stage/:id",
       name: "AddStage",
       component: AddStage,
     },
