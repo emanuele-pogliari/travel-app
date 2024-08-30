@@ -181,6 +181,19 @@ class Trip
 
     public function delete()
     {
+        // Elimina le tappe collegate
+        $query = "DELETE FROM stages WHERE day_id IN (SELECT id FROM days WHERE trip_id = :trip_id)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':trip_id', $this->id);
+        $stmt->execute();
+
+        // Elimina i giorni collegati
+        $query = "DELETE FROM days WHERE trip_id = :trip_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':trip_id', $this->id);
+        $stmt->execute();
+
+        // Infine, elimina il trip
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);

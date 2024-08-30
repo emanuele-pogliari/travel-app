@@ -28,6 +28,32 @@ export default {
         console.log(this.single_trip);
       });
   },
+  methods: {
+    deleteTrip() {
+      if (
+        confirm(
+          "Sei sicuro di voler eliminare questo viaggio? Questa azione non può essere annullata."
+        )
+      ) {
+        axios
+          .delete(
+            "http://localhost/travel-app/travel-app-backend/api/trips.php?id=" +
+              this.tripID
+          )
+          .then((response) => {
+            if (response.data.success) {
+              alert("Viaggio eliminato con successo!");
+              window.location.href = "http://localhost:5173/";
+            } else {
+              alert("Errore durante l'eliminazione del viaggio.");
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    },
+  },
 };
 </script>
 <template>
@@ -38,6 +64,11 @@ export default {
       :day="day"
       class="mb-5"
     ></AppCardDays>
+    <div class="d-flex justify-content-end">
+      <button @click="deleteTrip" class="btn btn-danger">
+        Elimina viaggio
+      </button>
+    </div>
   </div>
 </template>
 <style></style>
