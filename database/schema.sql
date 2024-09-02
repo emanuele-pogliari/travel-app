@@ -16,6 +16,7 @@ CREATE TABLE days (
     date DATE,
     FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
 );
+
 -- create stages table
 CREATE TABLE stages (
     id INT AUTO_INCREMENT PRIMARY KEY,
