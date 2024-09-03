@@ -6,6 +6,7 @@ import TripDetail from "./pages/TripDetail.vue";
 import DayDetail from "./pages/DayDetail.vue";
 import SingleStage from "./pages/SingleStage.vue";
 import AddStage from "./pages/AddStage.vue";
+import EditTrip from "./pages/EditTrip.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -42,6 +43,11 @@ const router = createRouter({
       path: "/add-stage/:id",
       name: "AddStage",
       component: AddStage,
+    },
+    {
+      path: "/edit-trip/:id",
+      name: "EditTrip",
+      component: EditTrip,
     },
   ],
 });

@@ -137,20 +137,38 @@ class Trip
         }
     }
 
+    public function updateNumberOfDaysOnly()
+    {
+        $query = "UPDATE " . $this->table_name . " SET number_of_days = :number_of_days WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':number_of_days', $this->number_of_days);
+        $stmt->bindParam(':id', $this->id);
+
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            error_log('Failed to update number of days: ' . implode(" ", $stmt->errorInfo()));
+            return false;
+        }
+    }
+
     public function create()
     {
-        $query = "INSERT INTO " . $this->table_name . " (title, description, cover, start_date) VALUES (:title, :description, :cover, :start_date)";
+        $query = "INSERT INTO " . $this->table_name . " (title, description, start_date, cover, number_of_days) VALUES (:title, :description, :start_date, :cover, :number_of_days)";
 
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':title', $this->title);
         $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':cover', $this->cover);
         if (empty($this->start_date)) {
             $stmt->bindValue(':start_date', null, PDO::PARAM_NULL);
         } else {
             $stmt->bindParam(':start_date', $this->start_date);
         }
+        $stmt->bindParam(':cover', $this->cover);
+        $stmt->bindParam(':number_of_days', $this->number_of_days);
+
 
         try {
             if ($stmt->execute()) {
@@ -171,12 +189,69 @@ class Trip
 
     public function update()
     {
-        $query = "UPDATE " . $this->table_name . " SET title = :title, description = :description WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':title', $this->title);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':start_date', $this->start_date);
-        return $stmt->execute();
+        try {
+            $this->conn->beginTransaction();
+
+            $query = "UPDATE " . $this->table_name . " SET title = :title, description = :description, start_date = :start_date, cover = :cover, number_of_days = :number_of_days WHERE id = :id";
+
+            $stmt = $this->conn->prepare($query);
+
+            // Binding dei parametri
+            $stmt->bindParam(':id', $this->id);
+            $stmt->bindParam(':title', $this->title);
+            $stmt->bindParam(':description', $this->description);
+            $stmt->bindParam(':start_date', $this->start_date);
+            $stmt->bindParam(':cover', $this->cover);
+            $stmt->bindParam(':number_of_days', $this->number_of_days);
+
+            if (!$stmt->execute()) {
+                error_log('SQL Error: ' . implode(" ", $stmt->errorInfo()));
+                $this->conn->rollBack();
+                return false;
+            }
+
+            // Gestione dei giorni
+            $query = "SELECT COUNT(*) as total_days FROM days WHERE trip_id = :trip_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':trip_id', $this->id);
+            $stmt->execute();
+            $current_days = $stmt->fetch(PDO::FETCH_ASSOC)['total_days'];
+
+            if ($this->number_of_days > $current_days) {
+                // Aggiungi giorni
+                for ($i = $current_days + 1; $i <= $this->number_of_days; $i++) {
+                    $date = date('Y-m-d', strtotime($this->start_date . ' + ' . ($i - 1) . ' days'));
+                    $query = "INSERT INTO days (trip_id, day_number, date) VALUES (:trip_id, :day_number, :date)";
+                    $stmt = $this->conn->prepare($query);
+                    $stmt->bindParam(':trip_id', $this->id);
+                    $stmt->bindParam(':day_number', $i);
+                    $stmt->bindParam(':date', $date);
+                    if (!$stmt->execute()) {
+                        error_log('Failed to add day: ' . implode(" ", $stmt->errorInfo()));
+                        $this->conn->rollBack();
+                        return false;
+                    }
+                }
+            } elseif ($this->number_of_days < $current_days) {
+                // Rimuovi giorni
+                $query = "DELETE FROM days WHERE trip_id = :trip_id AND day_number > :day_number";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':trip_id', $this->id);
+                $stmt->bindParam(':day_number', $this->number_of_days);
+                if (!$stmt->execute()) {
+                    error_log('Failed to delete excess days: ' . implode(" ", $stmt->errorInfo()));
+                    $this->conn->rollBack();
+                    return false;
+                }
+            }
+
+            $this->conn->commit();
+            return true;
+        } catch (Exception $e) {
+            error_log('Exception: ' . $e->getMessage());
+            $this->conn->rollBack();
+            return false;
+        }
     }
 
     public function delete()

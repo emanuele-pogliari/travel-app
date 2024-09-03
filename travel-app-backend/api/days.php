@@ -1,7 +1,12 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
 header("Content-Type: application/json");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Content-Type: multipart/form-data");
 // days.php
-include_once '../config/database.php';
+
+include_once '../config/db.php';
 include_once '../models/Day.php';
 
 $day = new Day($db);
@@ -28,6 +33,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         } else {
             echo json_encode(['success' => false]);
         }
+
         break;
 
     case 'PUT':

@@ -40,4 +40,44 @@ class Day
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function create()
+    {
+        $query = "INSERT INTO " . $this->table_name . " (trip_id, day_number, date) VALUES (:trip_id, :day_number, :date)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':trip_id', $this->trip_id);
+        $stmt->bindParam(':day_number', $this->day_number);
+        $stmt->bindParam(':date', $this->date);
+        if ($stmt->execute()) {
+            $this->id = $this->conn->lastInsertId();
+            return true;
+        }
+        return false;
+    }
+
+    public function update()
+    {
+        $query = "UPDATE " . $this->table_name . " SET trip_id = :trip_id, day_number = :day_number, date = :date WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':trip_id', $this->trip_id);
+        $stmt->bindParam(':day_number', $this->day_number);
+        $stmt->bindParam(':date', $this->date);
+        return $stmt->execute();
+    }
+
+    public function delete()
+    {
+        // Elimina tutte le tappe (stages) collegate a questo giorno
+        $query = "DELETE FROM stages WHERE day_id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        $stmt->execute();
+
+        // Elimina il giorno stesso
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $this->id);
+        return $stmt->execute(); // Aggiunto return per indicare successo/fallimento
+    }
 }

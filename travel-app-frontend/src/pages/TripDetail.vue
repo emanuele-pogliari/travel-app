@@ -16,6 +16,7 @@ export default {
   },
   created() {
     this.tripID = this.$route.params.id;
+    console.log(this.tripID);
     localStorage.setItem("CurrTripID", this.tripID);
     console.log(this.tripID);
     axios
@@ -43,7 +44,7 @@ export default {
           .then((response) => {
             if (response.data.success) {
               alert("Viaggio eliminato con successo!");
-              window.location.href = "http://localhost:5173/";
+              window.location.href = `http://localhost:5173/trip/${this.tripID}`;
             } else {
               alert("Errore durante l'eliminazione del viaggio.");
             }
@@ -65,6 +66,11 @@ export default {
       class="mb-5"
     ></AppCardDays>
     <div class="d-flex justify-content-end">
+      <router-link
+        :to="{ name: 'EditTrip', params: { id: this.single_trip.id } }"
+      >
+        Modifica viaggio
+      </router-link>
       <button @click="deleteTrip" class="btn btn-danger">
         Elimina viaggio
       </button>
