@@ -14,6 +14,7 @@ CREATE TABLE days (
     trip_id INT,
     day_number INT NOT NULL,
     date DATE,
+    total_days INT NOT NULL,
     FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
 );
 

@@ -192,11 +192,17 @@ class Trip
         try {
             $this->conn->beginTransaction();
 
+            // Ottieni la data di inizio attuale dal database
+            $query = "SELECT start_date FROM " . $this->table_name . " WHERE id = :id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':id', $this->id);
+            $stmt->execute();
+            $current_start_date = $stmt->fetch(PDO::FETCH_ASSOC)['start_date'];
+
+            // Aggiorna i dati del trip
             $query = "UPDATE " . $this->table_name . " SET title = :title, description = :description, start_date = :start_date, cover = :cover, number_of_days = :number_of_days WHERE id = :id";
 
             $stmt = $this->conn->prepare($query);
-
-            // Binding dei parametri
             $stmt->bindParam(':id', $this->id);
             $stmt->bindParam(':title', $this->title);
             $stmt->bindParam(':description', $this->description);
@@ -210,7 +216,15 @@ class Trip
                 return false;
             }
 
-            // Gestione dei giorni
+            // Se la data di inizio è cambiata, aggiorna le date dei giorni
+            if ($this->start_date !== $current_start_date) {
+                if (!$this->updateDaysDates()) {
+                    $this->conn->rollBack();
+                    return false;
+                }
+            }
+
+            // Gestione del numero di giorni (aggiunta o rimozione)
             $query = "SELECT COUNT(*) as total_days FROM days WHERE trip_id = :trip_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':trip_id', $this->id);
@@ -254,6 +268,34 @@ class Trip
         }
     }
 
+    private function updateDaysDates()
+    {
+        try {
+            $query = "SELECT id, day_number FROM days WHERE trip_id = :trip_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':trip_id', $this->id);
+            $stmt->execute();
+            $days = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($days as $day) {
+                // Calcola la nuova data usando la data di inizio aggiornata
+                $new_date = date('Y-m-d', strtotime($this->start_date . ' + ' . ($day['day_number'] - 1) . ' days'));
+                $query = "UPDATE days SET date = :date WHERE id = :id";
+                $stmt = $this->conn->prepare($query);
+                $stmt->bindParam(':date', $new_date);
+                $stmt->bindParam(':id', $day['id']);
+                if (!$stmt->execute()) {
+                    error_log('Failed to update day date: ' . implode(" ", $stmt->errorInfo()));
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            error_log('Exception in updateDaysDates: ' . $e->getMessage());
+            return false;
+        }
+    }
     public function delete()
     {
         // Elimina le tappe collegate

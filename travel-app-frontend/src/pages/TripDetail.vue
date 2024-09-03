@@ -2,11 +2,13 @@
 import axios from "axios";
 import { store } from "../store.js";
 import AppCardDays from "../components/AppCardDays.vue";
+import AppUpNav from "../components/AppUpNav.vue";
 
 export default {
   name: "TripDetail",
   components: {
     AppCardDays,
+    AppUpNav,
   },
   data() {
     return {
@@ -60,6 +62,7 @@ export default {
 <template>
   <div class="container">
     <h1 class="m-3">{{ single_trip.title }}</h1>
+    <AppUpNav></AppUpNav>
     <AppCardDays
       v-for="day in single_trip.days"
       :day="day"

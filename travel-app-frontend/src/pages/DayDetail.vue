@@ -2,9 +2,11 @@
 import axios from "axios";
 import { store } from "../store.js";
 import AppCardStage from "../components/AppCardStage.vue";
+import AppUpNav from "../components/AppUpNav.vue";
 export default {
   components: {
     AppCardStage,
+    AppUpNav,
   },
 
   data() {
@@ -97,6 +99,7 @@ export default {
 </script>
 <template>
   <div class="container">
+    <AppUpNav></AppUpNav>
     <AppCardStage
       v-for="stage in single_day.stages"
       :stage="stage"
