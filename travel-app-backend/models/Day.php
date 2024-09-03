@@ -16,9 +16,8 @@ class Day
 
     public function getAll()
     {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE trip_id = :trip_id";
+        $query = "SELECT * FROM " . $this->table_name;
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':trip_id', $this->trip_id);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -32,11 +31,11 @@ class Day
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getStops()
+    public function getByTripId($trip_id)
     {
-        $query = "SELECT * FROM stops WHERE day_id = :day_id";
+        $query = "SELECT * FROM " . $this->table_name . " WHERE trip_id = :trip_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':day_id', $this->id);
+        $stmt->bindParam(':trip_id', $trip_id);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
